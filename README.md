@@ -60,4 +60,34 @@ docker rm -f cqgc-mailpit keycloak-keycloakify
 npm run build-keycloak-theme
 ```
 
-Produces `dist_keycloak/cqgc-keycloak-theme.jar`. Copy it into Keycloak's `providers/` directory, run `kc.sh build`, then select `keycloakify-cqgc-app` as the realm's login and email theme.
+Outputs in `dist_keycloak/`:
+
+| File | Use |
+|---|---|
+| `cqgc-keycloak-theme.jar` | Theme packaged as a provider |
+| `theme/keycloakify-cqgc-app/` | The same theme as a plain directory (`login/`, `email/`) |
+| `cqgc-keycloak-theme.tar.gz` | Archive of that directory |
+
+### Deploy as a provider (JAR)
+
+Copy the JAR into Keycloak's `providers/` directory, run `kc.sh build`, and restart.
+
+### Deploy as a theme directory
+
+Extract the archive into Keycloak's `themes/` directory, so that you get `/opt/keycloak/themes/keycloakify-cqgc-app/{login,email}`, then restart Keycloak. No `kc.sh build` is needed. For example, in a Dockerfile:
+
+```dockerfile
+FROM quay.io/keycloak/keycloak:26.3.3
+# ADD extracts local .tar.gz archives automatically
+ADD dist_keycloak/cqgc-keycloak-theme.tar.gz /opt/keycloak/themes/
+```
+
+Or on a running server:
+
+```bash
+tar -xzf cqgc-keycloak-theme.tar.gz -C /opt/keycloak/themes/
+```
+
+Keycloak caches themes in production mode, so restart it after replacing the files.
+
+Either way, select `keycloakify-cqgc-app` as the realm's login and email theme (Realm settings → Themes).

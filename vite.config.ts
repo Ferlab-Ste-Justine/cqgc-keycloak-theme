@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { defineConfig } from "vite";
@@ -22,17 +23,34 @@ export default defineConfig({
             },
             // Runs in the generated resources directory, before the JAR is packaged.
             postBuild: async buildContext => {
-                const file = path.join(
-                    "theme",
-                    buildContext.themeNames[0],
-                    "login",
-                    "theme.properties"
-                );
+                const themeName = buildContext.themeNames[0];
+
+                const file = path.join("theme", themeName, "login", "theme.properties");
                 const content = fs.readFileSync(file, "utf8");
                 fs.writeFileSync(
                     file,
                     content.replace(/^locales=.*$/m, `locales=${LOCALES.join(",")}`)
                 );
+
+                // Also ship the theme as a plain directory + archive, for deployments that copy
+                // it into Keycloak's themes/ directory instead of installing the JAR provider.
+                // Same files as the JAR, minus the register-user-profile.ftl/update-user-profile.ftl
+                // aliases Keycloakify adds later for Keycloak <= 23 (not used by Keycloak 26).
+                const outDir = path.join(buildContext.keycloakifyBuildDirPath, "theme");
+                fs.rmSync(outDir, { recursive: true, force: true });
+                fs.cpSync(path.join("theme", themeName), path.join(outDir, themeName), {
+                    recursive: true
+                });
+                execFileSync("tar", [
+                    "-czf",
+                    path.join(
+                        buildContext.keycloakifyBuildDirPath,
+                        "cqgc-keycloak-theme.tar.gz"
+                    ),
+                    "-C",
+                    outDir,
+                    themeName
+                ]);
             }
         })
     ],

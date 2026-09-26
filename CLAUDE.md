@@ -14,7 +14,7 @@ It is a rewrite of the Keycloakify 7 / antd / redux theme in `Ferlab-Ste-Justine
 npm run dev                    # mock pages: /?page=login.ftl&lang=fr&client=clin-prescription-client&error=credentials
 npm run storybook              # stories in src/login/pages/*.stories.tsx
 npm run build                  # tsc + vite build
-npm run build-keycloak-theme   # → dist_keycloak/cqgc-keycloak-theme.jar (needs Maven)
+npm run build-keycloak-theme   # → dist_keycloak/: cqgc-keycloak-theme.jar, theme/ dir, cqgc-keycloak-theme.tar.gz (needs Maven)
 npx keycloakify start-keycloak --keycloak-version 26.3.3   # real KC in Docker, testuser/password123
 npx eslint src && npx prettier --write .
 ```
@@ -32,6 +32,7 @@ There are no unit tests; verify with Storybook/dev mocks and `start-keycloak`. T
 - `clin-prescription-client` (see `utils.ts`) switches the login title and username label and hides the language switcher.
 - "Action expired" is detected by matching `message.summary` text (`isExpiryMessage`); update the list if Keycloak's wording changes.
 - `KcContext.ts` extensions: `client.baseUrl` (present at runtime, used by Cancel buttons) and `error.ftl`'s optional `showWhiteListInfoPage` (only set if the legacy whitelist provider is deployed).
+- `postBuild` in `vite.config.ts` also copies the generated theme to `dist_keycloak/theme/` and archives it (`cqgc-keycloak-theme.tar.gz`) for directory-based deployment.
 - Languages are limited to en/fr in three places: `LOCALES` in `vite.config.ts` (a `postBuild` hook rewrites `locales=` in the generated login `theme.properties`), `src/email/theme.properties`, and `SUPPORTED_LANGUAGES` in `components/LanguageSwitcher.tsx` (hides other languages a realm might enable).
 - Custom strings (en/fr) are in `src/login/i18n.ts` (`withCustomTranslations`). French strings keep a space before `:` and `?`.
 - Mocks: `KcPageStory.tsx` (shared by Storybook and `devKcContext.ts`, which is only loaded by `npm run dev`).
