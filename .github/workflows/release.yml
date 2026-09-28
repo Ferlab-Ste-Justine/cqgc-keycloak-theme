@@ -1,0 +1,32 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build-keycloak-theme
+
+      - name: Check the archive layout
+        run: tar -tzf dist_keycloak/cqgc-keycloak-theme.tar.gz | grep -q '^keycloakify-cqgc-app/login/'
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: dist_keycloak/cqgc-keycloak-theme.tar.gz
+          generate_release_notes: true
