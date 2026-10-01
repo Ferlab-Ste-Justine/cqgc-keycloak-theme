@@ -15,7 +15,12 @@ const LoginResetPassword = lazy(() => import("./pages/LoginResetPassword"));
 const LoginUpdatePassword = lazy(() => import("./pages/LoginUpdatePassword"));
 const LoginVerifyEmail = lazy(() => import("./pages/LoginVerifyEmail"));
 const LoginPageExpired = lazy(() => import("./pages/LoginPageExpired"));
+const Info = lazy(() => import("./pages/Info"));
 const ErrorPage = lazy(() => import("./pages/Error"));
+const LoginOauthGrant = lazy(() => import("./pages/LoginOauthGrant"));
+const LoginOauth2DeviceVerifyUserCode = lazy(
+    () => import("./pages/LoginOauth2DeviceVerifyUserCode")
+);
 
 const doMakeUserConfirmPassword = true;
 
@@ -38,9 +43,20 @@ export default function KcPage(props: { kcContext: KcContext }) {
                         return <LoginVerifyEmail kcContext={kcContext} i18n={i18n} />;
                     case "login-page-expired.ftl":
                         return <LoginPageExpired kcContext={kcContext} i18n={i18n} />;
+                    case "login-oauth2-device-verify-user-code.ftl":
+                        return (
+                            <LoginOauth2DeviceVerifyUserCode
+                                kcContext={kcContext}
+                                i18n={i18n}
+                            />
+                        );
+                    case "login-oauth-grant.ftl":
+                        return <LoginOauthGrant kcContext={kcContext} i18n={i18n} />;
+                    case "info.ftl":
+                        return <Info kcContext={kcContext} i18n={i18n} />;
                     case "error.ftl":
                         return <ErrorPage kcContext={kcContext} i18n={i18n} />;
-                    // Every other page (register, OTP, WebAuthn, info, terms…) uses
+                    // Every other page (register, OTP, WebAuthn, terms…) uses
                     // Keycloakify's default implementation with Keycloak's default CSS.
                     default:
                         return (

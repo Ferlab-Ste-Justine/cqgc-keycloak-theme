@@ -23,7 +23,7 @@ There are no unit tests; verify with Storybook/dev mocks and `start-keycloak`. T
 
 ## Architecture
 
-- `src/login/KcPage.tsx` routes on `kcContext.pageId`. Custom CQGC pages live in `src/login/pages/` (login, reset password, update password, verify email, page expired, error). Every other page falls through to Keycloakify's `DefaultPage` + default `Template` with Keycloak's own CSS (`doUseDefaultCss`).
+- `src/login/KcPage.tsx` routes on `kcContext.pageId`. Custom CQGC pages live in `src/login/pages/` (login, reset password, update password, verify email, page expired, device code, OAuth consent, info, error). Every other page falls through to Keycloakify's `DefaultPage` + default `Template` with Keycloak's own CSS (`doUseDefaultCss`).
 - Custom pages do **not** use Keycloakify's `Template`; they render `components/SideImageLayout.tsx` and take `PageProps<PageId>` (`pages/PageProps.ts`).
 - **CSS scoping:** `src/login/index.css` (Tailwind + CQGC tokens mapped to shadcn variables) is imported only by `SideImageLayout`, so Vite code-splits it with the lazy custom pages and Tailwind's preflight never reaches the fallback pages. Don't import it from `main.tsx` or `KcPage.tsx`.
 - shadcn components are in `src/components/ui/`, already restyled to the legacy antd look (2px radius, blue-8 primary, 32px controls). Palette tokens are `cqgc-blue-*` / `cqgc-gray-*` in `index.css`.
@@ -31,7 +31,7 @@ There are no unit tests; verify with Storybook/dev mocks and `start-keycloak`. T
 - Reset password confirmation: Keycloak 26 answers a reset request with `login.ftl` + a `success` message. The reset page stores the email in `sessionStorage` (`RESET_EMAIL_STORAGE_KEY` in `utils.ts`), and `Login.tsx` shows the confirmation screen when both are present.
 - `clin-prescription-client` (see `utils.ts`) switches the login title and username label and hides the language switcher.
 - "Action expired" is detected by matching `message.summary` text (`isExpiryMessage`); update the list if Keycloak's wording changes.
-- `KcContext.ts` extensions: `client.baseUrl` (present at runtime, used by Cancel buttons) and `error.ftl`'s optional `showWhiteListInfoPage` (only set if the legacy whitelist provider is deployed).
+- `KcContext.ts` extensions: `client.baseUrl` (present at runtime, used by Cancel buttons; note Keycloak omits `client` entirely on device-flow pages before a code is entered, although Keycloakify types it as always present) and `error.ftl`'s optional `showWhiteListInfoPage` (only set if the legacy whitelist provider is deployed).
 - `postBuild` in `vite.config.ts` also copies the generated theme to `dist_keycloak/theme/` and archives it (`cqgc-keycloak-theme.tar.gz`) for directory-based deployment.
 - Languages are limited to en/fr in three places: `LOCALES` in `vite.config.ts` (a `postBuild` hook rewrites `locales=` in the generated login `theme.properties`), `src/email/theme.properties`, and `SUPPORTED_LANGUAGES` in `components/LanguageSwitcher.tsx` (hides other languages a realm might enable).
 - Custom strings (en/fr) are in `src/login/i18n.ts` (`withCustomTranslations`). French strings keep a space before `:` and `?`.

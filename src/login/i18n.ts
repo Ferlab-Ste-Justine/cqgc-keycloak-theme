@@ -49,7 +49,8 @@ const { useI18n, ofTypeI18n } = i18nBuilder
             expiry_error_title: "Password reset link expired",
             expiry_error_message_1: "The reset password link has expired.",
             expiry_error_message_2: "Please submit a",
-            expiry_error_try_again: "new request"
+            expiry_error_try_again: "new request",
+            device_user_code_label: "Code:"
         },
         fr: {
             activation_title: "Demande d’accès",
@@ -97,7 +98,8 @@ const { useI18n, ofTypeI18n } = i18nBuilder
             expiry_error_message_1:
                 "Le lien de réinitialisation du mot de passe est expiré.",
             expiry_error_message_2: "Veuillez effectuer une",
-            expiry_error_try_again: "nouvelle demande"
+            expiry_error_try_again: "nouvelle demande",
+            device_user_code_label: "Code :"
         }
     })
     .build();
