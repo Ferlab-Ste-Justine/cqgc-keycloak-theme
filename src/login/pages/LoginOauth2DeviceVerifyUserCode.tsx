@@ -9,7 +9,7 @@ import type { PageProps } from "./PageProps";
 /** OAuth 2.0 device authorization grant: the user enters the code displayed by their device. */
 export default function LoginOauth2DeviceVerifyUserCode({ kcContext, i18n }: PageProps<"login-oauth2-device-verify-user-code.ftl">) {
     // No `client` here: Keycloak only knows the client once a valid code has been entered.
-    const { url, message, realm } = kcContext;
+    const { url, message } = kcContext;
     const { msgStr } = i18n;
 
     const [error, setError] = useState<string>();
@@ -26,8 +26,10 @@ export default function LoginOauth2DeviceVerifyUserCode({ kcContext, i18n }: Pag
         setIsSubmitting(true);
     };
 
+    // No language switcher: Keycloak ignores kc_locale here (no auth session yet), so the page
+    // follows the browser language / KEYCLOAK_LOCALE cookie.
     return (
-        <SideImageLayout i18n={i18n} languageSwitcher={realm.internationalizationEnabled}>
+        <SideImageLayout i18n={i18n}>
             <div className="flex w-full max-w-[496px] flex-col gap-6">
                 <div className="flex flex-col gap-1.5">
                     <h1 className="text-2xl">{msgStr("oauth2DeviceVerificationTitle")}</h1>
